@@ -21,6 +21,7 @@ public class CourseController {
     CourseService courseService;
 
     @PostMapping("/course")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     public CourseResponse addCourse(@RequestBody CourseRequest courseRequest, @AuthenticationPrincipal UserDetails userDetails){
         return courseService.addCourse(courseRequest, userDetails.getUsername());
     }
