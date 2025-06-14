@@ -7,6 +7,8 @@ import com.example.e_learning.dto.mycourses;
 import com.example.e_learning.entity.Course;
 import com.example.e_learning.entity.Enrollment;
 import com.example.e_learning.entity.User;
+import com.example.e_learning.exception.AlreadyEnrolledException;
+import com.example.e_learning.exception.ResourceNotFoundException;
 import com.example.e_learning.repositories.CourseRepository;
 import com.example.e_learning.repositories.EnrollmentRepository;
 import com.example.e_learning.repositories.UserRepository;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.lang.module.ResolutionException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,13 +36,13 @@ public class EnrollmentService {
     public EnrollResponse enrollStudent(EnrollRequest enrollRequest) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User student = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
         Course course = courseRepository.findById(enrollRequest.getCourseId())
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
         if (enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(student.getUserId(), course.getCourseId()).isPresent()) {
-            throw new RuntimeException("Already enrolled in this course");
+            throw new AlreadyEnrolledException("Already enrolled in this course");
         }
 
         Enrollment enrollment = Enrollment.builder()
@@ -57,7 +60,7 @@ public class EnrollmentService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User student = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
         List<Enrollment> enrollments = enrollmentRepository.findByStudent(student);
         return enrollments.stream()

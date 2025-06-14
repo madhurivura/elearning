@@ -5,6 +5,7 @@ import com.example.e_learning.dto.LoginResponse;
 import com.example.e_learning.dto.RegisterRequest;
 import com.example.e_learning.dto.RegisterResponse;
 import com.example.e_learning.entity.User;
+import com.example.e_learning.exception.AlreadyEnrolledException;
 import com.example.e_learning.repositories.UserRepository;
 import com.example.e_learning.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,12 @@ public class AuthService {
     PasswordEncoder passwordEncoder;
 
     public RegisterResponse registerUser(RegisterRequest registerRequest) {
+
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new AlreadyEnrolledException("Email already in use");
+        }
+
+
         User user = new User();
         user.setFullName(registerRequest.getFullName());
         user.setEmail(registerRequest.getEmail());

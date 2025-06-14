@@ -31,11 +31,7 @@ public class CourseController {
         return courseService.getAllCourses();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/course/{courseId}")
-    public String deleteById(@PathVariable Long courseId){
-        return courseService.deleteById(courseId);
-    }
+
 
     @GetMapping("/instructor/courses")
     @PreAuthorize("hasRole('INSTRUCTOR')")
