@@ -1,12 +1,14 @@
 package com.example.e_learning.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
 @Data
@@ -30,5 +32,9 @@ public class Course {
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Enrollment> enrollments;
 }
 
